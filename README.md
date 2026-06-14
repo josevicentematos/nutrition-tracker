@@ -1,73 +1,56 @@
-# React + TypeScript + Vite
+# Nutrition Tracker
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple web app to register products (per-100g nutrition) and build a standing
+daily meal plan with per-section and total macros + calories. React + Supabase.
 
-Currently, two official plugins are available:
+## Local setup
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+2. Create a free Supabase project at https://supabase.com.
+3. In the Supabase SQL editor, run the contents of `supabase/schema.sql`.
+4. In Authentication → Providers, enable Email. For a personal single-user app
+   you may disable "Confirm email".
+5. Copy `.env.example` to `.env.local` and fill in your project URL and anon key:
+   ```bash
+   cp .env.example .env.local
+   ```
+6. Run the dev server:
+   ```bash
+   npm run dev
+   ```
 
-## React Compiler
+## Scripts
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- `npm run dev` — start the dev server
+- `npm test` — run the test suite once
+- `npm run test:watch` — watch mode
+- `npm run build` — type-check and production build
+- `npm run preview` — preview the production build
+- `npm run lint` — run ESLint
 
-## Expanding the ESLint configuration
+## Architecture
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **Frontend:** Vite + React (TypeScript), single-page app, two screens (My Day,
+  Products) with state-based tab navigation.
+- **Backend:** Supabase (Postgres + Auth). The app talks directly to Supabase
+  via its JS client; there is no custom server.
+- **Security:** Row Level Security scopes every row to the logged-in user; the
+  anon key is safe to ship because RLS enforces isolation.
+- **Macro math:** pure functions in `src/lib/nutrition.ts`, unit-tested.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+See `docs/superpowers/specs/` and `docs/superpowers/plans/` for the design spec
+and implementation plan.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Deploy (free)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+Frontend (static) on Cloudflare Pages or Vercel:
+- Build command: `npm run build`
+- Output directory: `dist`
+- Environment variables: set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+The Supabase project hosts the database and auth on its free tier. Note: a free
+Supabase project pauses after ~7 days of inactivity and can be resumed from the
+dashboard.
