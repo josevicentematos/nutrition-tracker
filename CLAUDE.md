@@ -25,7 +25,7 @@ Tests do **not** need env vars — they mock the data layer (see Testing).
 React + Vite + TypeScript single-page app with **no custom backend**. The browser talks straight to Supabase (Postgres + Auth) via `@supabase/supabase-js`. Three layers:
 
 - **`src/data/*`** — the only modules that touch Supabase. `products.ts`, `sections.ts`, `planItems.ts` each export thin async CRUD functions. Anything needing persistence goes through here; components never import `supabase` directly.
-- **`src/lib/nutrition.ts`** — pure macro math (`scalePortion`, `addNutrients`, `sumPortions`), no I/O. All calorie/macro totals are computed **client-side** from fetched rows; totals scale by `amount / serving_size` and `Nutrients` includes `sodium_mg`. This is the highest-value code to unit-test.
+- **`src/lib/nutrition.ts`** — pure macro math (`scalePortion`, `addNutrients`, `sumPortions`), no I/O. All calorie/macro totals are computed **client-side** from fetched rows; totals scale by `amount / serving_size` and `Nutrients` includes `sodium` (from each product's `sodium_mg`). This is the highest-value code to unit-test.
 - **`src/components/*`, `src/auth/*`** — components fetch via the data layer into local `useState`, then render totals using the pure functions. `AuthProvider` exposes the Supabase session; `App.tsx` gates on it and switches between the two screens with local tab state (no router).
 
 ### Domain model (see `src/types.ts` and `supabase/schema.sql`)
