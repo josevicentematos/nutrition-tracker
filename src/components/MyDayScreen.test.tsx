@@ -5,15 +5,16 @@ import { MyDayScreen } from './MyDayScreen';
 import type { Product, MealSection, PlanItem } from '../types';
 
 const products: Product[] = [
-  { id: 'p1', user_id: 'u1', name: 'Oats', calories_per_100g: 100, protein_per_100g: 10,
-    carbs_per_100g: 20, fat_per_100g: 5, default_serving_g: 40, created_at: '', updated_at: '' },
+  { id: 'p1', user_id: 'u1', name: 'Oats', unit: 'g', serving_size: 100,
+    calories: 100, protein: 10, carbs: 20, fat: 5, sodium_mg: 50,
+    package_size: null, package_price: null, created_at: '', updated_at: '' },
 ];
 const sections: MealSection[] = [
   { id: 's1', user_id: 'u1', name: 'Breakfast', sort_order: 0, created_at: '', updated_at: '' },
   { id: 's2', user_id: 'u1', name: 'Dinner', sort_order: 1, created_at: '', updated_at: '' },
 ];
 const planItems: PlanItem[] = [
-  { id: 'i1', user_id: 'u1', section_id: 's1', product_id: 'p1', grams: 200, sort_order: 0,
+  { id: 'i1', user_id: 'u1', section_id: 's1', product_id: 'p1', amount: 200, sort_order: 0,
     created_at: '', updated_at: '' },
 ];
 
@@ -25,7 +26,7 @@ const hoisted = vi.hoisted(() => ({
   deleteSection: vi.fn(),
   listPlanItems: vi.fn(),
   addPlanItem: vi.fn(),
-  updatePlanItemGrams: vi.fn(),
+  updatePlanItemAmount: vi.fn(),
   deletePlanItem: vi.fn(),
 }));
 
@@ -40,7 +41,7 @@ vi.mock('../data/sections', () => ({
 vi.mock('../data/planItems', () => ({
   listPlanItems: hoisted.listPlanItems,
   addPlanItem: hoisted.addPlanItem,
-  updatePlanItemGrams: hoisted.updatePlanItemGrams,
+  updatePlanItemAmount: hoisted.updatePlanItemAmount,
   deletePlanItem: hoisted.deletePlanItem,
 }));
 
@@ -52,13 +53,18 @@ describe('MyDayScreen', () => {
     hoisted.listPlanItems.mockResolvedValue(planItems);
   });
 
-  it('shows section subtotal and grand total scaled by grams', async () => {
+  it('shows section subtotal and grand total with sodium, scaled by amount', async () => {
     render(<MyDayScreen userId="u1" />);
-    // 200g of Oats => calories 200, protein 20, carbs 40, fat 10
+    // 200g of Oats (serving 100g) => factor 2 => 200 kcal, P20, C40, F10, Na100
     expect(await screen.findByTestId('subtotal-s1'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10');
+      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
     expect(screen.getByTestId('grand-total'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10');
+      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
+  });
+
+  it('shows the amount with its unit', async () => {
+    render(<MyDayScreen userId="u1" />);
+    expect(await screen.findByText('200 g')).toBeInTheDocument();
   });
 
   it('removes a plan item', async () => {
