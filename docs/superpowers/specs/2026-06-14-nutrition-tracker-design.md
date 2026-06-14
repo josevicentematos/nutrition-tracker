@@ -92,7 +92,7 @@ eat every day."
 | Column       | Type    | Notes                                          |
 |--------------|---------|------------------------------------------------|
 | `section_id` | uuid    | References `meal_sections`. On delete cascade. |
-| `product_id` | uuid    | References `products`. On delete restrict/handle gracefully. |
+| `product_id` | uuid    | References `products`. Delete is blocked at the UI by a warning (see Error Handling). |
 | `grams`      | numeric | Portion in grams. > 0.                          |
 | `sort_order` | integer | Order within the section.                       |
 
@@ -133,8 +133,9 @@ Pure, standalone functions (no I/O), so the math is trivially unit-testable.
 - **Validation:** `name` required; numeric fields non-negative; `grams` > 0.
 - Supabase errors surfaced inline near the relevant action.
 - Loading states on data fetches.
-- Deleting a product referenced by plan items handled gracefully (warn /
-  cascade decision implemented explicitly rather than failing silently).
+- Deleting a product that is referenced by plan items: the app warns the user
+  that it is used in N meal item(s) and offers to remove those plan items as
+  part of the delete. The delete does not proceed silently.
 
 ## Testing
 
