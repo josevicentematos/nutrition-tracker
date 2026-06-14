@@ -106,7 +106,7 @@ export function MyDayScreen({ userId }: { userId: string }) {
             </div>
             <AddPlanItem
               products={products}
-              onAdd={(productId, grams) => onAdd(section.id, productId, grams)}
+              onAdd={(productId, amount) => onAdd(section.id, productId, amount)}
             />
           </section>
         );
