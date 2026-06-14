@@ -3,7 +3,7 @@ import type { Product } from '../types';
 import { listProducts, deleteProduct, createProduct, updateProduct, type ProductInput } from '../data/products';
 import { countPlanItemsForProduct, deletePlanItemsForProduct } from '../data/planItems';
 import { ProductForm } from './ProductForm';
-import { formatNutrients } from '../lib/format';
+import { formatNutrients, formatAmount } from '../lib/format';
 
 interface PendingDelete {
   product: Product;
@@ -77,9 +77,9 @@ export function ProductsScreen({ userId }: { userId: string }) {
             <span className="product-name">{p.name}</span>
             <span className="product-macros">
               {formatNutrients({
-                calories: p.calories_per_100g, protein: p.protein_per_100g,
-                carbs: p.carbs_per_100g, fat: p.fat_per_100g,
-              })} / 100g
+                calories: p.calories, protein: p.protein,
+                carbs: p.carbs, fat: p.fat, sodium: p.sodium_mg,
+              })} per {formatAmount(p.serving_size, p.unit)}
             </span>
             <button onClick={() => setEditing(p)} aria-label={`Edit ${p.name}`}>Edit</button>
             <button onClick={() => onDeleteClick(p)} aria-label={`Delete ${p.name}`}>Delete</button>
