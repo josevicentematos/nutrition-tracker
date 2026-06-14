@@ -4,6 +4,7 @@ import { listProducts } from '../data/products';
 import { ensureDefaultSections, createSection, renameSection, deleteSection } from '../data/sections';
 import { listPlanItems, addPlanItem, deletePlanItem } from '../data/planItems';
 import { sumPortions } from '../lib/nutrition';
+import { formatAmount } from '../lib/format';
 import { NutrientBadge } from './NutrientBadge';
 import { AddPlanItem } from './AddPlanItem';
 import { SectionManager } from './SectionManager';
@@ -43,12 +44,12 @@ export function MyDayScreen({ userId }: { userId: string }) {
   }
 
   const allPortions = items
-    .map((i) => ({ product: productById(i.product_id), grams: i.grams }))
-    .filter((x): x is { product: Product; grams: number } => !!x.product);
+    .map((i) => ({ product: productById(i.product_id), amount: i.amount }))
+    .filter((x): x is { product: Product; amount: number } => !!x.product);
 
-  async function onAdd(sectionId: string, productId: string, grams: number) {
+  async function onAdd(sectionId: string, productId: string, amount: number) {
     const order = items.filter((i) => i.section_id === sectionId).length;
-    await addPlanItem(userId, sectionId, productId, grams, order);
+    await addPlanItem(userId, sectionId, productId, amount, order);
     await refresh();
   }
 
@@ -82,7 +83,7 @@ export function MyDayScreen({ userId }: { userId: string }) {
 
       {sections.map((section) => {
         const rows = portionsFor(section.id);
-        const subtotal = sumPortions(rows.map((r) => ({ product: r.product, grams: r.item.grams })));
+        const subtotal = sumPortions(rows.map((r) => ({ product: r.product, amount: r.item.amount })));
         return (
           <section key={section.id} className="meal-section">
             <h3>{section.name}</h3>
@@ -90,7 +91,7 @@ export function MyDayScreen({ userId }: { userId: string }) {
               {rows.map((r) => (
                 <li key={r.item.id}>
                   <span>{r.product.name}</span>
-                  <span>{r.item.grams} g</span>
+                  <span>{formatAmount(r.item.amount, r.product.unit)}</span>
                   <button
                     aria-label={`Remove ${r.product.name} from ${section.name}`}
                     onClick={() => onRemove(r.item.id)}
@@ -105,7 +106,7 @@ export function MyDayScreen({ userId }: { userId: string }) {
             </div>
             <AddPlanItem
               products={products}
-              onAdd={(productId, grams) => onAdd(section.id, productId, grams)}
+              onAdd={(productId, amount) => onAdd(section.id, productId, amount)}
             />
           </section>
         );

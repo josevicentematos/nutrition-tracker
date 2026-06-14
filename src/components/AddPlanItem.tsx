@@ -1,27 +1,29 @@
 import { useState } from 'react';
 import type { Product } from '../types';
+import { unitLabel } from '../lib/format';
 
 interface Props {
   products: Product[];
-  onAdd: (productId: string, grams: number) => Promise<void>;
+  onAdd: (productId: string, amount: number) => Promise<void>;
 }
 
 export function AddPlanItem({ products, onAdd }: Props) {
   const [productId, setProductId] = useState('');
-  const [grams, setGrams] = useState('');
+  const [amount, setAmount] = useState('');
+  const selected = products.find((p) => p.id === productId);
 
   function onSelect(id: string) {
     setProductId(id);
     const p = products.find((x) => x.id === id);
-    if (p?.default_serving_g != null) setGrams(String(p.default_serving_g));
+    if (p) setAmount(String(p.serving_size));
   }
 
   async function handleAdd() {
-    const g = parseFloat(grams);
-    if (!productId || !Number.isFinite(g) || g <= 0) return;
-    await onAdd(productId, g);
+    const a = parseFloat(amount);
+    if (!productId || !Number.isFinite(a) || a <= 0) return;
+    await onAdd(productId, a);
     setProductId('');
-    setGrams('');
+    setAmount('');
   }
 
   return (
@@ -34,10 +36,11 @@ export function AddPlanItem({ products, onAdd }: Props) {
           ))}
         </select>
       </label>
-      <label>Grams
-        <input type="number" min="0" step="any" value={grams}
-          onChange={(e) => setGrams(e.target.value)} />
+      <label>Amount
+        <input type="number" min="0" step="any" value={amount}
+          onChange={(e) => setAmount(e.target.value)} />
       </label>
+      {selected && <span data-testid="amount-unit">{unitLabel(selected.unit)}</span>}
       <button type="button" onClick={handleAdd}>Add</button>
     </div>
   );

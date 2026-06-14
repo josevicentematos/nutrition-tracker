@@ -5,9 +5,10 @@ import { ProductsScreen } from './ProductsScreen';
 import type { Product } from '../types';
 
 const sample: Product = {
-  id: 'p1', user_id: 'u1', name: 'Oats',
-  calories_per_100g: 380, protein_per_100g: 13, carbs_per_100g: 67, fat_per_100g: 7,
-  default_serving_g: 40, created_at: '', updated_at: '',
+  id: 'p1', user_id: 'u1', name: 'Milk',
+  unit: 'ml', serving_size: 200,
+  calories: 88, protein: 6, carbs: 10, fat: 3, sodium_mg: 50,
+  package_size: 1000, package_price: 1.5, created_at: '', updated_at: '',
 };
 
 const hoisted = vi.hoisted(() => ({
@@ -38,16 +39,17 @@ describe('ProductsScreen', () => {
     hoisted.deletePlanItemsForProduct.mockResolvedValue(undefined);
   });
 
-  it('lists products', async () => {
+  it('lists products with their serving', async () => {
     render(<ProductsScreen userId="u1" />);
-    expect(await screen.findByText('Oats')).toBeInTheDocument();
+    expect(await screen.findByText('Milk')).toBeInTheDocument();
+    expect(screen.getByText(/per 200 ml/)).toBeInTheDocument();
   });
 
   it('deletes directly when product is unused', async () => {
     hoisted.countPlanItemsForProduct.mockResolvedValue(0);
     render(<ProductsScreen userId="u1" />);
-    await screen.findByText('Oats');
-    await userEvent.click(screen.getByRole('button', { name: 'Delete Oats' }));
+    await screen.findByText('Milk');
+    await userEvent.click(screen.getByRole('button', { name: 'Delete Milk' }));
     await waitFor(() => expect(hoisted.deleteProduct).toHaveBeenCalledWith('p1'));
     expect(hoisted.deletePlanItemsForProduct).not.toHaveBeenCalled();
   });
@@ -55,8 +57,8 @@ describe('ProductsScreen', () => {
   it('warns and removes plan items when product is in use', async () => {
     hoisted.countPlanItemsForProduct.mockResolvedValue(3);
     render(<ProductsScreen userId="u1" />);
-    await screen.findByText('Oats');
-    await userEvent.click(screen.getByRole('button', { name: 'Delete Oats' }));
+    await screen.findByText('Milk');
+    await userEvent.click(screen.getByRole('button', { name: 'Delete Milk' }));
 
     const warning = await screen.findByRole('alertdialog');
     expect(warning).toHaveTextContent('used in 3 meal item');

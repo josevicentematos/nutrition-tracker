@@ -25,13 +25,15 @@ Tests do **not** need env vars — they mock the data layer (see Testing).
 React + Vite + TypeScript single-page app with **no custom backend**. The browser talks straight to Supabase (Postgres + Auth) via `@supabase/supabase-js`. Three layers:
 
 - **`src/data/*`** — the only modules that touch Supabase. `products.ts`, `sections.ts`, `planItems.ts` each export thin async CRUD functions. Anything needing persistence goes through here; components never import `supabase` directly.
-- **`src/lib/nutrition.ts`** — pure macro math (`scalePortion`, `addNutrients`, `sumPortions`), no I/O. All calorie/macro totals are computed **client-side** from fetched rows; the DB stores only per-100g values and gram portions. This is the highest-value code to unit-test.
+- **`src/lib/nutrition.ts`** — pure macro math (`scalePortion`, `addNutrients`, `sumPortions`), no I/O. All calorie/macro totals are computed **client-side** from fetched rows; totals scale by `amount / serving_size` and `Nutrients` includes `sodium` (from each product's `sodium_mg`). This is the highest-value code to unit-test.
 - **`src/components/*`, `src/auth/*`** — components fetch via the data layer into local `useState`, then render totals using the pure functions. `AuthProvider` exposes the Supabase session; `App.tsx` gates on it and switches between the two screens with local tab state (no router).
 
 ### Domain model (see `src/types.ts` and `supabase/schema.sql`)
 
-- The user keeps **one standing daily plan** — there is no date/history dimension. `plan_items` (a product + grams + section) is the core table.
-- Nutrition is entered **per 100g** plus an optional default serving; portions scale by `grams / 100`.
+- The user keeps **one standing daily plan** — there is no date/history dimension. `plan_items` (a product + amount + section) is the core table.
+- Nutrition is entered **per the product's label serving**: each product has a `unit` (`g`/`ml`/`piece`), a `serving_size`, and per-serving `calories`/`protein`/`carbs`/`fat`/`sodium_mg`. Portions scale by `amount / serving_size` (see `scalePortion`).
+- `plan_items` stores `amount` (the quantity eaten, in the product's unit). Plan amounts pre-fill from the product's `serving_size`.
+- Products also carry optional `package_size` + `package_price`; these are **stored but not yet displayed** — a future weekly-budget feature will use them. There is no cost math in the app today.
 - Meal sections (Breakfast, Lunch, Snack, Intra-workout, Dinner) are seeded **client-side** by `ensureDefaultSections()` on first load — not by a DB trigger — and are user-editable.
 - Every table has a `user_id` and an RLS policy `auth.uid() = user_id`. Any new table must follow this pattern or data will leak across users.
 - Deleting a product that is used in plan items is **blocked by a UI warning** (`ProductsScreen`) that offers to remove those items first; the schema also enforces this with `on delete restrict` on `plan_items.product_id`.
