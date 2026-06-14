@@ -25,6 +25,8 @@ export function ProductsScreen({ userId }: { userId: string }) {
     }
   }, []);
 
+  // Async fetch-on-mount: state is set after an await, not synchronously in the effect.
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => { void refresh(); }, [refresh]);
 
   async function handleSave(input: ProductInput) {
