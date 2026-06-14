@@ -14,7 +14,7 @@ export async function addPlanItem(
   userId: string,
   sectionId: string,
   productId: string,
-  grams: number,
+  amount: number,
   sortOrder: number,
 ): Promise<PlanItem> {
   const { data, error } = await supabase
@@ -23,7 +23,7 @@ export async function addPlanItem(
       user_id: userId,
       section_id: sectionId,
       product_id: productId,
-      grams,
+      amount,
       sort_order: sortOrder,
     })
     .select()
@@ -32,10 +32,10 @@ export async function addPlanItem(
   return data as PlanItem;
 }
 
-export async function updatePlanItemGrams(id: string, grams: number): Promise<void> {
+export async function updatePlanItemAmount(id: string, amount: number): Promise<void> {
   const { error } = await supabase
     .from('plan_items')
-    .update({ grams, updated_at: new Date().toISOString() })
+    .update({ amount, updated_at: new Date().toISOString() })
     .eq('id', id);
   if (error) throw error;
 }

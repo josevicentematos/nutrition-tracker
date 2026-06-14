@@ -3,11 +3,15 @@ import type { Product } from '../types';
 
 export type ProductInput = {
   name: string;
-  calories_per_100g: number;
-  protein_per_100g: number;
-  carbs_per_100g: number;
-  fat_per_100g: number;
-  default_serving_g: number | null;
+  unit: import('../types').Unit;
+  serving_size: number;
+  calories: number;
+  protein: number;
+  carbs: number;
+  fat: number;
+  sodium_mg: number;
+  package_size: number | null;
+  package_price: number | null;
 };
 
 export async function listProducts(): Promise<Product[]> {
