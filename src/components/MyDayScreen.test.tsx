@@ -7,7 +7,7 @@ import type { Product, MealSection, PlanItem } from '../types';
 const products: Product[] = [
   { id: 'p1', user_id: 'u1', name: 'Oats', unit: 'g', serving_size: 100,
     calories: 100, protein: 10, carbs: 20, fat: 5, sodium_mg: 50,
-    package_size: null, package_price: null, created_at: '', updated_at: '' },
+    package_size: null, package_unit: null, package_price: null, created_at: '', updated_at: '' },
 ];
 const sections: MealSection[] = [
   { id: 's1', user_id: 'u1', name: 'Breakfast', sort_order: 0, created_at: '', updated_at: '' },
