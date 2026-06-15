@@ -8,7 +8,7 @@ const sample: Product = {
   id: 'p1', user_id: 'u1', name: 'Milk',
   unit: 'ml', serving_size: 200,
   calories: 88, protein: 6, carbs: 10, fat: 3, sodium_mg: 50,
-  package_size: 1000, package_price: 1.5, created_at: '', updated_at: '',
+  package_size: 1000, package_unit: 'ml', package_price: 1.5, created_at: '', updated_at: '',
 };
 
 const hoisted = vi.hoisted(() => ({

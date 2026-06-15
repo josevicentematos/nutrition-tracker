@@ -11,6 +11,7 @@ export type ProductInput = {
   fat: number;
   sodium_mg: number;
   package_size: number | null;
+  package_unit: import('../types').Unit | null;
   package_price: number | null;
 };
 
