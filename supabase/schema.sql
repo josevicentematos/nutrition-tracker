@@ -15,6 +15,7 @@ create table public.products (
   fat      numeric not null default 0 check (fat >= 0),
   sodium_mg numeric not null default 0 check (sodium_mg >= 0),
   package_size  numeric check (package_size is null or package_size > 0),
+  package_unit  text check (package_unit is null or package_unit in ('g','ml','piece')),
   package_price numeric check (package_price is null or package_price >= 0),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()

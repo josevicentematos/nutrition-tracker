@@ -12,6 +12,7 @@ export interface Product {
   fat: number;
   sodium_mg: number;
   package_size: number | null;
+  package_unit: Unit | null;
   package_price: number | null;
   created_at: string;
   updated_at: string;

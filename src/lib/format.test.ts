@@ -13,7 +13,7 @@ describe('formatNutrients', () => {
   it('formats a one-line summary including sodium in mg', () => {
     expect(
       formatNutrients({ calories: 300.04, protein: 10.06, carbs: 20, fat: 5, sodium: 120 }),
-    ).toBe('300 kcal · P 10.1 · C 20 · F 5 · Na 120mg');
+    ).toBe('300 kcal · C 20 · P 10.1 · F 5 · Na 120mg');
   });
 });
 

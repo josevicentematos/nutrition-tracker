@@ -15,6 +15,7 @@ function product(overrides: Partial<Product> = {}): Product {
     fat: 5,
     sodium_mg: 50,
     package_size: null,
+    package_unit: null,
     package_price: null,
     created_at: '',
     updated_at: '',

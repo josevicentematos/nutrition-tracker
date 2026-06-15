@@ -7,7 +7,7 @@ import type { Product, MealSection, PlanItem } from '../types';
 const products: Product[] = [
   { id: 'p1', user_id: 'u1', name: 'Oats', unit: 'g', serving_size: 100,
     calories: 100, protein: 10, carbs: 20, fat: 5, sodium_mg: 50,
-    package_size: null, package_price: null, created_at: '', updated_at: '' },
+    package_size: null, package_unit: null, package_price: null, created_at: '', updated_at: '' },
 ];
 const sections: MealSection[] = [
   { id: 's1', user_id: 'u1', name: 'Breakfast', sort_order: 0, created_at: '', updated_at: '' },
@@ -57,9 +57,9 @@ describe('MyDayScreen', () => {
     render(<MyDayScreen userId="u1" />);
     // 200g of Oats (serving 100g) => factor 2 => 200 kcal, P20, C40, F10, Na100
     expect(await screen.findByTestId('subtotal-s1'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
+      .toHaveTextContent('200 kcal · C 40 · P 20 · F 10 · Na 100mg');
     expect(screen.getByTestId('grand-total'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
+      .toHaveTextContent('200 kcal · C 40 · P 20 · F 10 · Na 100mg');
   });
 
   it('shows the amount with its unit', async () => {
