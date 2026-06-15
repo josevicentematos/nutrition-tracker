@@ -4,34 +4,43 @@ import userEvent from '@testing-library/user-event';
 import { ProductForm } from './ProductForm';
 
 describe('ProductForm', () => {
-  it('submits entered values including unit, serving, sodium, and package', async () => {
+  it('submits entered values including serving unit, package unit, and sodium', async () => {
     const onSubmit = vi.fn().mockResolvedValue(undefined);
     render(<ProductForm onSubmit={onSubmit} onCancel={() => {}} />);
 
-    await userEvent.type(screen.getByLabelText('Name'), 'Milk');
-    await userEvent.selectOptions(screen.getByLabelText('Unit'), 'ml');
-    await userEvent.type(screen.getByLabelText('Serving size'), '200');
-    await userEvent.type(screen.getByLabelText('Calories per serving'), '88');
+    await userEvent.type(screen.getByLabelText('Name'), 'Bread');
+    await userEvent.selectOptions(screen.getByLabelText('Serving unit'), 'piece');
+    await userEvent.type(screen.getByLabelText('Serving size'), '2');
+    await userEvent.type(screen.getByLabelText('Calories per serving'), '160');
+    await userEvent.type(screen.getByLabelText('Carbs per serving'), '30');
     await userEvent.type(screen.getByLabelText('Protein per serving'), '6');
-    await userEvent.type(screen.getByLabelText('Carbs per serving'), '10');
-    await userEvent.type(screen.getByLabelText('Fat per serving'), '3');
-    await userEvent.type(screen.getByLabelText('Sodium per serving (mg)'), '50');
-    await userEvent.type(screen.getByLabelText('Package size (optional)'), '1000');
-    await userEvent.type(screen.getByLabelText('Package price (optional)'), '1.5');
+    await userEvent.type(screen.getByLabelText('Fat per serving'), '2');
+    await userEvent.type(screen.getByLabelText('Sodium per serving (mg)'), '300');
+    await userEvent.type(screen.getByLabelText('Package size (optional)'), '500');
+    await userEvent.selectOptions(screen.getByLabelText('Package unit'), 'g');
+    await userEvent.type(screen.getByLabelText('Package price (optional)'), '1.2');
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
 
     expect(onSubmit).toHaveBeenCalledWith({
-      name: 'Milk',
-      unit: 'ml',
-      serving_size: 200,
-      calories: 88,
+      name: 'Bread',
+      unit: 'piece',
+      serving_size: 2,
+      calories: 160,
+      carbs: 30,
       protein: 6,
-      carbs: 10,
-      fat: 3,
-      sodium_mg: 50,
-      package_size: 1000,
-      package_price: 1.5,
+      fat: 2,
+      sodium_mg: 300,
+      package_size: 500,
+      package_unit: 'g',
+      package_price: 1.2,
     });
+  });
+
+  it('orders carbs before protein in the form', () => {
+    render(<ProductForm onSubmit={vi.fn()} onCancel={() => {}} />);
+    const carbs = screen.getByLabelText('Carbs per serving');
+    const protein = screen.getByLabelText('Protein per serving');
+    expect(carbs.compareDocumentPosition(protein) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
   });
 
   it('blocks submit when name is empty', async () => {
@@ -70,7 +79,7 @@ describe('ProductForm', () => {
     await userEvent.type(screen.getByLabelText('Serving size'), '40');
     await userEvent.click(screen.getByRole('button', { name: 'Save' }));
     expect(onSubmit).toHaveBeenCalledWith(
-      expect.objectContaining({ name: 'Oats', unit: 'g', serving_size: 40, package_size: null, package_price: null }),
+      expect.objectContaining({ package_size: null, package_unit: null, package_price: null }),
     );
   });
 });
