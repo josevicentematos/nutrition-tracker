@@ -57,9 +57,9 @@ describe('MyDayScreen', () => {
     render(<MyDayScreen userId="u1" />);
     // 200g of Oats (serving 100g) => factor 2 => 200 kcal, P20, C40, F10, Na100
     expect(await screen.findByTestId('subtotal-s1'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
+      .toHaveTextContent('200 kcal · C 40 · P 20 · F 10 · Na 100mg');
     expect(screen.getByTestId('grand-total'))
-      .toHaveTextContent('200 kcal · P 20 · C 40 · F 10 · Na 100mg');
+      .toHaveTextContent('200 kcal · C 40 · P 20 · F 10 · Na 100mg');
   });
 
   it('shows the amount with its unit', async () => {

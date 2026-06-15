@@ -7,8 +7,8 @@ export function round1(n: number): number {
 export function formatNutrients(n: Nutrients): string {
   return (
     `${round1(n.calories)} kcal · ` +
-    `P ${round1(n.protein)} · ` +
     `C ${round1(n.carbs)} · ` +
+    `P ${round1(n.protein)} · ` +
     `F ${round1(n.fat)} · ` +
     `Na ${round1(n.sodium)}mg`
   );
